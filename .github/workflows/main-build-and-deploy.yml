@@ -1,0 +1,55 @@
+name: Main - build and deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    name: Build and upload artifacts
+    uses: ./.github/workflows/template-build.yml
+    with:
+      tag: latest
+    secrets: inherit
+
+#  deploy-to-prod:
+#    name: Deploy to Production
+#    needs: build
+#    runs-on: ubuntu-latest
+#    environment:
+#      name: production
+#      url: ${{ steps.deploy.outputs.url }}
+#    permissions:
+#      id-token: write
+#      contents: read
+#    steps:
+#
+#      - uses: actions/checkout@v3
+#
+#      - name: Load .env file
+#        uses: xom9ikk/dotenv@v2
+#        with:
+#          path: ./.github
+#          load-mode: strict
+#
+#      - name: Deploy to production
+#        id: deploy
+#        uses: ./.github/actions/deploy
+#        with:
+#          slot_name: production
+#          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+#          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+#          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#          AZURE_RESOURCE_GROUP: ${{ env.AZURE_RESOURCE_GROUP }}
+#          APP_SERVICE_NAME: ${{ env.APP_SERVICE_NAME }}
+#          ACR_LOGIN_SERVER: ${{ env.ACR_LOGIN_SERVER }}
+#          IMAGE_NAME: ${{ env.IMAGE_NAME }}
